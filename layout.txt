@@ -1,0 +1,12 @@
+#   means nothing
+# + means room
+# S means start
+# B means boss
+# T means treasure
+# D means dragon/end
+S+++++
++
+++++++BT
++
+++++++BD
+      T
