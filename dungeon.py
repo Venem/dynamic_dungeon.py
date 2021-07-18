@@ -70,7 +70,7 @@ def roomType(y, x):
 
     if roomType == "S":
         return("the start")
-    elif roomType == "█":
+    elif roomType == "█" or roomType == "+":
         return("a room")
     elif roomType == "B":
         return("a boss room")
@@ -154,7 +154,7 @@ def printMyRoom():
     print("\033[0;35;1m", end="")
     if roomType == "S":
         print("You are at the start")
-    elif roomType == "█":
+    elif roomType == "█" or roomType == "+":
         print("You are in a room")
     elif roomType == "B":
         print("You are in a boss room")
