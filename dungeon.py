@@ -14,7 +14,7 @@ discoveredRooms = [[]]
 defeatedBosses = []
 treasuresStolen = []
 
-# \/ this is self-explanatory
+# declare gold and health variables
 gold = 0
 health = 100
 
