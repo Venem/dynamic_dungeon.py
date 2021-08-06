@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # we need random numbers for the boss fights
 from random import randint
 # we need to wait for a couple of seconds for the dragon fight at the end
