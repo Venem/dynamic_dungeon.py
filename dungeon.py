@@ -7,6 +7,28 @@ from time import sleep
 # this is for clearing the screen
 from os import system, name
 
+# colours
+E           = "m"
+S           = "\033[0"
+RESET       = "\033[0;00m"
+BOLD        = ";1"
+UNDERLINE   = ";4"
+RED         = ";31"
+GREEN       = ";32"
+YELLOW      = ";33"
+BLUE        = ";34"
+MAGENTA     = ";35"
+CYAN        = ";36"
+WHITE       = ";37"
+GREY        = ";90"
+LRED        = ";91"
+LGREEN      = ";92"
+LYELLOW     = ";93"
+LBLUE       = ";94"
+LMAGENTA    = ";94"
+LCYAN       = ";94"
+LWHITE      = ";94"
+
 # the positioning system is a bit weird because of the 2d array thing, keep that in mind when changing the code
 position = []
 layout = []
@@ -91,28 +113,28 @@ def findRooms(y, x):
         rooms[roomsCounter].append(y)
         rooms[roomsCounter].append(x - 1)
         roomsCounter = roomsCounter + 1
-        print("\033[0;90m - \033[0;00mYou can go \033[0;36;4mleft\033[0;00m to", roomType(y, x - 1))
+        print(S+GREY+E + " - " + RESET + "You can go " + S+CYAN+UNDERLINE+E + "left" + RESET + " to", roomType(y, x - 1))
     # room on the right
     if isRoom(y, x + 1):
         rooms.append([])
         rooms[roomsCounter].append(y)
         rooms[roomsCounter].append(x + 1)
         roomsCounter = roomsCounter + 1
-        print("\033[0;90m - \033[0;00mYou can go \033[0;36;4mright\033[0;00m to", roomType(y, x + 1))
+        print(S+GREY+E + " - " + RESET + "You can go " + S+CYAN+UNDERLINE+E + "right" + RESET + " to", roomType(y, x + 1))
     # room up
     if isRoom(y - 1, x):
         rooms.append([])
         rooms[roomsCounter].append(y - 1)
         rooms[roomsCounter].append(x)
         roomsCounter = roomsCounter + 1
-        print("\033[0;90m - \033[0;00mYou can go \033[0;36;4mup\033[0;00m to", roomType(y - 1, x))
+        print(S+GREY+E + " - " + RESET + "You can go " + S+CYAN+UNDERLINE+E + "up" + RESET + " to", roomType(y - 1, x))
     # room down
     if isRoom(y + 1, x):
         rooms.append([])
         rooms[roomsCounter].append(y + 1)
         rooms[roomsCounter].append(x)
         roomsCounter = roomsCounter + 1
-        print("\033[0;90m - \033[0;00mYou can go \033[0;36;4mdown\033[0;00m to", roomType(y + 1, x))
+        print(S+GREY+E + " - " + RESET + "You can go " + S+CYAN+UNDERLINE+E + "down" + RESET + " to", roomType(y + 1, x))
 
     # add discovered rooms into an array, useful later on for map display
     for i in rooms:
@@ -135,9 +157,9 @@ def move(direction):
     elif direction.lower() == "down" or direction.lower() == "d" and isRoom(position[0] + 1, position[1]):
         position = [position[0] + 1, position[1]]
     elif direction.lower() == "gold" or direction.lower() == "g":
-        print("\033[0;33mYou have", gold, "gold\033[0;00m")
+        print(S+YELLOW+E + "You have", gold, "gold" + RESET)
     elif direction.lower() == "health" or direction.lower() == "hp":
-        print("\033[0;31mYou have", health, "hp\033[0;00m")
+        print(S+RED+E + "You have", health, "hp" + RESET)
     elif direction.lower() == "scores" or direction.lower() == "s":
         showScores()
     elif direction.lower() == "help" or direction == "?":
@@ -145,13 +167,13 @@ def move(direction):
     elif direction.lower() == "q":
         exit()
     else:
-        print("\033[0;91mThere is no such room\033[0;00m")
+        print(S+LRED+E + "There is no such room" + RESET)
 
 # looks at your coordinates and tells you what room you're in
 def printMyRoom():
     roomType = layout[position[0]][position[1]]
 
-    print("\033[0;35;1m", end="")
+    print(S+MAGENTA+BOLD+E, end="")
     if roomType == "S":
         print("You are at the start")
     elif roomType == "█" or roomType == "+":
@@ -165,7 +187,7 @@ def printMyRoom():
     elif roomType == "D":
         print("You are in the dragon room")
         dragonFight()
-    print("\033[0;00m", end="")
+    print(RESET, end="")
 
 # this is only used in the function below
 def isMatch(i, j, sortedMap):
@@ -178,41 +200,41 @@ def showMap():
     sortedMap = sorted(discoveredRooms)
     for i in range(len(layout)):
         for j in range(len(layout[i])):
-            print("\033[0;90m", end="")
+            print(S+GREY+E, end="")
             if isMatch(i, j, sortedMap) and i == position[0] and j == position[1]:
-                print("\033[0;31;1m", end="")
+                print(S+RED+BOLD+E, end="")
             if isMatch(i, j, sortedMap):
                 print(layout[i][j], end="")
-                print("\033[0;00m", end="")
+                print(RESET, end="")
             else:
                 print(" ", end="")
         if i <= sortedMap[-1][0] and (i + 1) >= sortedMap[0][0]:
             print()
-    print("\033[0;00m")
+    print(RESET)
 
 # help menu
 def showHelp():
-    print("\033[0;90;1mHow to play the game:\033[0;00m")
-    print("\033[0;90m - \033[0;00mYou are in a dungeon, collect as much gold as possible")
-    print("\033[0;90m - \033[0;00mDo this by fighting bosses and raiding treasure rooms")
+    print(S+GREY+BOLD+E + "How to play the game:" + RESET)
+    print(S+GREY+E + " - " + RESET + "You are in a dungeon, collect as much gold as possible")
+    print(S+GREY+E + " - " + RESET + "Do this by fighting bosses and raiding treasure rooms")
     print("---")
-    print("\033[0;90;1mCOMMANDS:\033[0;00m")
-    print("\033[0;90m - \033[0;00mup, down, right, left to move to the respective direction")
-    print("\033[0;90m - \033[0;00mg or gold to show the amount of gold you have")
-    print("\033[0;90m - \033[0;00mhp or health to show the amount of health you have")
-    print("\033[0;90m - \033[0;00ms or scores to show previous scores")
-    print("\033[0;90m - \033[0;00m? or help for this menu")
-    print("\033[0;90m - \033[0;00mq to quit")
+    print(S+GREY+BOLD+E + "COMMANDS:" + RESET)
+    print(S+GREY+E + " - " + RESET + "up, down, right, left to move to the respective direction")
+    print(S+GREY+E + " - " + RESET + "g or gold to show the amount of gold you have")
+    print(S+GREY+E + " - " + RESET + "hp or health to show the amount of health you have")
+    print(S+GREY+E + " - " + RESET + "s or scores to show previous scores")
+    print(S+GREY+E + " - " + RESET + "? or help for this menu")
+    print(S+GREY+E + " - " + RESET + "q to quit")
 
 def giveTreasure():
     global gold
 
     if position in treasuresStolen:
-        print("\033[0;36mYou have already stolen this treasure\033[0;00m")
+        print(S+CYAN+E + "You have already stolen this treasure" + RESET)
         return
 
     goldToGive = randint(10, randint(20, 500))
-    print("\033[0;33mYou gained", goldToGive, "gold!\033[0;00m")
+    print(S+YELLOW+E + "You gained", goldToGive, "gold!" + RESET)
     gold = gold + goldToGive
     treasuresStolen.append(position)
 
@@ -221,25 +243,26 @@ def bossFight():
     global health
 
     if position in defeatedBosses:
-        print("\033[0;36mYou have already killed this boss\033[0;00m")
+        print(S+CYAN+E + "You have already killed this boss" + RESET)
         return
 
     bossNum = randint(1, 100)
 
-    while True:
-        print("\033[0;00m", end="")
-        myGuess = input("\033[0;36mThe boss offers to let you go past if you guess its secret number (1-100): \033[0;00m")
+    validValue = False
+    while not validValue:
+        print(RESET, end="")
+        myGuess = input(S+CYAN+E + "The boss offers to let you go past if you guess its secret number (1-100): " + RESET)
 
         try:
             myGuess = int(myGuess)
         except ValueError :
-            print("\033[0;31mThe boss wants a valid number\033[0;00m")
+            print(S+RED+E + "The boss wants a valid number" + RESET)
             continue
 
         if myGuess <= 100 and myGuess >= 1:
-            break
+            validValue = True
         else:
-            print("\033[0;31mThe boss wants a valid number\033[0;00m")
+            print(S+RED+E + "The boss wants a valid number" + RESET)
             continue
 
     if bossNum < myGuess:
@@ -248,13 +271,13 @@ def bossFight():
         difference = bossNum - myGuess
     elif bossNum == myGuess:
         difference = 0
-        print("\033[0;36mYou guessed its number, you can go past\033[0;00m")
+        print(S+CYAN+E + "You guessed its number, you can go past" + RESET)
 
-    damage = round((100 - difference) * (difference / 32), 0)
-    print("\033[0;31mYou lost", damage, "health!\033[0;00m")
+    damage = round((100 - difference) * (difference / 32)/2, 0)
+    print(S+RED+E + "You lost", damage, "health!" + RESET)
     health = health - int(damage)
     if health < 0:
-        print("\033[0;31;1mYou died\033[0;00m")
+        print(S+RED+BOLD+E + "You died" + RESET)
         exit()
     defeatedBosses.append(position)
 
@@ -264,18 +287,18 @@ def dragonFight():
     global gold
 
     while True:
-        print("\033[0;00m", end="")
-        choice = input("\033[0;36mThe Dragon gives you two choices:\n(1) Get paid 8 gold per health (33% chance of winning fight)\n(2) Get paid 2 gold per health (66% chance of winning fight): \033[0;00m")
+        print(RESET, end="")
+        choice = input(S+CYAN+E + "The Dragon gives you two choices:\n(1) Get paid 8 gold per health (33% chance of winning fight)\n(2) Get paid 2 gold per health (66% chance of winning fight): " + RESET)
 
         try:
             choice = int(choice)
         except ValueError :
-            print("\033[0;31mThe dragon wants a valid choice\033[0;00m")
+            print(S+RED+E + "The dragon wants a valid choice" + RESET)
             continue
 
         if choice == 1:
             goldToGive = health * 8
-            print("\033[0;33mYou gained", goldToGive, "gold!\033[0;00m", end="")
+            print(S+YELLOW+E + "You gained", goldToGive, "gold!" + RESET, end="")
             gold = gold + goldToGive
             health = 1
 
@@ -283,7 +306,7 @@ def dragonFight():
 
             print()
 
-            print("\033[0;35mFighting Dragon\033[0;00m", end="")
+            print(S+MAGENTA+E + "Fighting Dragon" + RESET, end="")
 
             sleep(1)
 
@@ -291,18 +314,18 @@ def dragonFight():
 
             # approx 33% chance to win
             if randint(0, health) < health / 3:
-                print("\033[0;34mYou killed the dragon!\033[0;00m")
-                print("\033[0;33mYou got a total of", gold, "gold!\033[0;00m")
+                print(S+BLUE+E + "You killed the dragon!" + RESET)
+                print(S+YELLOW+E + "You got a total of", gold, "gold!" + RESET)
                 initials = input("Saving score. Please enter your initials: ")
                 writeScore(gold, initials)
                 exit()
             else:
-                print("\033[0;31mYou were killed by the dragon\033[0;00m")
+                print(S+RED+E + "You were killed by the dragon" + RESET)
                 exit()
 
         elif choice == 2:
 
-            print("\033[0;35mFighting Dragon\033[0;00m", end="")
+            print(S+MAGENTA+E + "Fighting Dragon" + RESET, end="")
 
             sleep(1)
 
@@ -310,25 +333,25 @@ def dragonFight():
 
             # approx 66% chance to win
             if randint(0, health) > health / 3:
-                print("\033[0;34mYou killed the dragon!\033[0;00m")
+                print(S+BLUE+E + "You killed the dragon!" + RESET)
 
                 sleep(0.5)
 
-                print("Converting \033[0;31mhearts\033[0;00m into \033[0;33mgold\033[0;00m")
+                print("Converting " + S+RED+E + "hearts" + RESET + " into " + S+YELLOW+E + "gold" + RESET)
 
                 sleep(0.5)
 
                 gold = gold + (health * 2)
 
-                print("\033[0;33mYou got a total of", gold, "gold!\033[0;00m")
+                print(S+YELLOW+E + "You got a total of", gold, "gold!" + RESET)
                 initials = input("Saving score. Please enter your initials: ")
                 writeScore(gold, initials)
                 exit()
             else:
-                print("\033[0;31mYou were killed by the dragon\033[0;00m")
+                print(S+RED+E + "You were killed by the dragon" + RESET)
                 exit()
         else:
-            print("\033[0;31mThe dragon wants a valid choice\033[0;00m")
+            print(S+RED+E + "The dragon wants a valid choice" + RESET)
             continue
 
 # save the player's score
@@ -349,7 +372,7 @@ def showScores():
     sortedScores = sorted(scoresStore, reverse=True)
 
     for i in range(len(sortedScores)):
-        print("\033[0;93;1m" + str(i + 1) + ". " + "\033[0;00m\033[0;94m" + str(sortedScores[i][0]) + "\t\t" + sortedScores[i][1] + "\033[0;00m", end="")
+        print(S+LYELLOW+BOLD+E + str(i + 1) + ". " + RESET + S+LBLUE+E + str(sortedScores[i][0]) + "\t\t" + sortedScores[i][1] + RESET, end="")
 
 # to clear screen
 def clear():
@@ -369,7 +392,7 @@ while True:
     print("---")
     showMap()
     print("~~~")
-    print("(? for help): \033[0;32m", end="")
+    print("(? for help): " + S+GREEN+E, end="")
     move(input())
-    print("\033[0;00m", end="")
+    print(RESET, end="")
 input()
