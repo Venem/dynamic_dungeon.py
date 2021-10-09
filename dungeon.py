@@ -146,28 +146,49 @@ def move(direction):
     global position
     global automap
 
+    timesToMove = 1
+    numberLen = 0
     clear()
 
-    if direction.lower() == "left" or direction.lower() == "l" and isRoom(position[0], position[1] - 1):
-        position = [position[0], position[1] - 1]
-    elif direction.lower() == "right" or direction.lower() == "r" and isRoom(position[0], position[1] + 1):
-        position = [position[0], position[1] + 1]
-    elif direction.lower() == "up" or direction.lower() == "u" and isRoom(position[0] - 1, position[1]):
-        position = [position[0] - 1, position[1]]
-    elif direction.lower() == "down" or direction.lower() == "d" and isRoom(position[0] + 1, position[1]):
-        position = [position[0] + 1, position[1]]
-    elif direction.lower() == "gold" or direction.lower() == "g":
-        print(S+YELLOW+E + "You have", gold, "gold" + RESET)
-    elif direction.lower() == "health" or direction.lower() == "hp":
-        print(S+RED+E + "You have", health, "hp" + RESET)
-    elif direction.lower() == "scores" or direction.lower() == "s":
-        showScores()
-    elif direction.lower() == "help" or direction == "?":
-        showHelp()
-    elif direction.lower() == "q":
-        exit()
-    else:
-        print(S+LRED+E + "There is no such room" + RESET)
+    # allows to run e.g 4r to go 4 to the right
+    for i in range(len(direction)):
+        if direction[i].isnumeric():
+            numberLen = i
+
+    if direction[:numberLen+1].isnumeric():
+        timesToMove = int(direction[:numberLen+1])
+        direction = direction[numberLen+1:]
+
+    for j in range(timesToMove):
+        if direction.lower() == "left" or direction.lower() == "l" and isRoom(position[0], position[1] - 1):
+            position = [position[0], position[1] - 1]
+            if position not in discoveredRooms:
+                discoveredRooms.append(position)
+        elif direction.lower() == "right" or direction.lower() == "r" and isRoom(position[0], position[1] + 1):
+            position = [position[0], position[1] + 1]
+            if position not in discoveredRooms:
+                discoveredRooms.append(position)
+        elif direction.lower() == "up" or direction.lower() == "u" and isRoom(position[0] - 1, position[1]):
+            position = [position[0] - 1, position[1]]
+            if position not in discoveredRooms:
+                discoveredRooms.append(position)
+        elif direction.lower() == "down" or direction.lower() == "d" and isRoom(position[0] + 1, position[1]):
+            position = [position[0] + 1, position[1]]
+            if position not in discoveredRooms:
+                discoveredRooms.append(position)
+        elif direction.lower() == "gold" or direction.lower() == "g":
+            print(S+YELLOW+E + "You have", gold, "gold" + RESET)
+        elif direction.lower() == "health" or direction.lower() == "hp":
+            print(S+RED+E + "You have", health, "hp" + RESET)
+        elif direction.lower() == "scores" or direction.lower() == "s":
+            showScores()
+        elif direction.lower() == "help" or direction == "?":
+            showHelp()
+        elif direction.lower() == "q":
+            exit()
+        else:
+            print(S+LRED+E + "There is no such room" + RESET)
+            break
 
 # looks at your coordinates and tells you what room you're in
 def printMyRoom():
