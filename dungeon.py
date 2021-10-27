@@ -42,6 +42,7 @@ health = 100
 
 # initialise and get layout from file
 def initLevel():
+    global layout
     tmpLayout = []
     # open file - when just using the filename, you have to run the game from the same folder as the layout and score. On linux and mac, if the game is in your $PATH, you need to use the full path of the layout file. This applies for the scores file.
     dungeon = open("layout.txt", "r")
@@ -55,10 +56,7 @@ def initLevel():
         else:
             tmpLayout.append(line.replace("\n", ""))
     # put dungeon layout in 2d array
-    for i in range(len(tmpLayout)):
-        layout.append([])
-        for char in tmpLayout[i]:
-            layout[i].append(char)
+    layout = [[char for char in tmpLayout[i]] for i in range(len(tmpLayout))]
 
 # scans the whole map to find the start point
 def findStart():
