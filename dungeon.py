@@ -50,6 +50,7 @@ def initLevel():
     for line in dungeon:
         if "#" in line:
             continue
+        # TODO: cleaner way to fix this:
         # █ character on windows messes up formatting, so we leave it as +
         if name != "nt":
             tmpLayout.append(line.replace("\n", "").replace("+", "█"))
@@ -58,6 +59,7 @@ def initLevel():
     # put dungeon layout in 2d array
     layout = [[char for char in tmpLayout[i]] for i in range(len(tmpLayout))]
 
+# TODO: clean this up
 # scans the whole map to find the start point
 def findStart():
     for i in range(len(layout)):
@@ -69,6 +71,7 @@ def findStart():
                 discoveredRooms[0].append(position[1])
                 return
 
+# TODO: tidy up logic
 # checks to see if there is a room at the coordinates passed in
 def isRoom(y, x):
     if y < 0:
@@ -84,6 +87,7 @@ def isRoom(y, x):
     else:
         return True
 
+# TODO: merge with printMyRoom()?
 # same thing as printMyRoom() but useful in different situations
 def roomType(y, x):
     roomType = layout[y][x]
@@ -99,7 +103,7 @@ def roomType(y, x):
     elif roomType == "D":
         return("the dragon room")
 
-
+# TODO: if statements are painfully repetitive
 # find the rooms around the current position which is passed in as a argument
 def findRooms(y, x):
     rooms = []
@@ -134,6 +138,7 @@ def findRooms(y, x):
         roomsCounter = roomsCounter + 1
         print(S+GREY+E + " - " + RESET + "You can go " + S+CYAN+UNDERLINE+E + "down" + RESET + " to", roomType(y + 1, x))
 
+    # TODO: clean up for loop
     # add discovered rooms into an array, useful later on for map display
     for i in rooms:
         if i not in discoveredRooms:
@@ -157,6 +162,7 @@ def move(direction):
         timesToMove = int(direction[:numberLen+1])
         direction = direction[numberLen+1:]
 
+    # TODO: this is more repetitive than Gucci Gang ffs
     for j in range(timesToMove):
         if direction.lower() == "left" or direction.lower() == "l" and isRoom(position[0], position[1] - 1):
             position = [position[0], position[1] - 1]
@@ -188,6 +194,7 @@ def move(direction):
             print(S+LRED+E + "There is no such room" + RESET)
             break
 
+# TODO: merge with roomType()?
 # looks at your coordinates and tells you what room you're in
 def printMyRoom():
     roomType = layout[position[0]][position[1]]
@@ -208,12 +215,14 @@ def printMyRoom():
         dragonFight()
     print(RESET, end="")
 
+# TODO: work out what on earth this does and simplify
 # this is only used in the function below
 def isMatch(i, j, sortedMap):
     for k in range(len(sortedMap)):
         if i == sortedMap[k][0] and j == sortedMap[k][1]:
             return True
 
+# TODO: same applies here as above. I mean this is painful to read
 # some wizardry I spent 3 hours on; shows a map of rooms the player has discovered
 def showMap():
     sortedMap = sorted(discoveredRooms)
@@ -233,17 +242,19 @@ def showMap():
 
 # help menu
 def showHelp():
-    print(S+GREY+BOLD+E + "How to play the game:" + RESET)
-    print(S+GREY+E + " - " + RESET + "You are in a dungeon, collect as much gold as possible")
-    print(S+GREY+E + " - " + RESET + "Do this by fighting bosses and raiding treasure rooms")
-    print("---")
-    print(S+GREY+BOLD+E + "COMMANDS:" + RESET)
-    print(S+GREY+E + " - " + RESET + "up, down, right, left to move to the respective direction")
-    print(S+GREY+E + " - " + RESET + "g or gold to show the amount of gold you have")
-    print(S+GREY+E + " - " + RESET + "hp or health to show the amount of health you have")
-    print(S+GREY+E + " - " + RESET + "s or scores to show previous scores")
-    print(S+GREY+E + " - " + RESET + "? or help for this menu")
-    print(S+GREY+E + " - " + RESET + "q to quit")
+    print(
+            S+GREY+BOLD+E + "How to play the game:" + RESET + "\n" +
+            S+GREY+E + " - " + RESET + "You are in a dungeon, collect as much gold as possible" + "\n" +
+            S+GREY+E + " - " + RESET + "Do this by fighting bosses and raiding treasure rooms" + "\n" +
+            "---" + "\n" +
+            S+GREY+BOLD+E + "COMMANDS:" + RESET + "\n" +
+            S+GREY+E + " - " + RESET + "up, down, right, left to move to the respective direction" + "\n" +
+            S+GREY+E + " - " + RESET + "g or gold to show the amount of gold you have" + "\n" +
+            S+GREY+E + " - " + RESET + "hp or health to show the amount of health you have" + "\n" +
+            S+GREY+E + " - " + RESET + "s or scores to show previous scores" + "\n" +
+            S+GREY+E + " - " + RESET + "? or help for this menu" + "\n" +
+            S+GREY+E + " - " + RESET + "q to quit"
+        )
 
 def giveTreasure():
     global gold
@@ -272,6 +283,7 @@ def bossFight():
         print(RESET, end="")
         myGuess = input(S+CYAN+E + "The boss offers to let you go past if you guess its secret number (1-100): " + RESET)
 
+        # TODO: just use isNumeric() or something
         try:
             myGuess = int(myGuess)
         except ValueError :
@@ -300,6 +312,7 @@ def bossFight():
         exit()
     defeatedBosses.append(position)
 
+# TODO: geez this was rushed... Throw it all out and redo fight
 # the final boss fight, you can either get more gold for defeating it but have a lower chance to kill it or get less gold but have a higher chance to kill it
 def dragonFight():
     global health
@@ -385,7 +398,9 @@ def showScores():
 
     # some wizardry to sort the scores
     for line in scores:
+        # TODO: this will look messed up if name is too long
         scoresStore.append(line.split("\t\t"))
+        # TODO: wow this is janky af
         scoresStore[-1][0] = int(scoresStore[-1][0])
 
     sortedScores = sorted(scoresStore, reverse=True)
