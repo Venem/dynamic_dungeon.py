@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# IMPORTANT MEGA TODO: make it so that you can do "10r" and still discover rooms around you
+
 # we need random numbers for the boss fights
 from random import randint
 # we need to wait for a couple of seconds for the dragon fight at the end
@@ -40,49 +42,32 @@ treasuresStolen = []
 gold = 0
 health = 100
 
-# initialise and get layout from file
+# initialise, get layout from file and find start
 def initLevel():
     global layout
-    tmpLayout = []
-    # open file - when just using the filename, you have to run the game from the same folder as the layout and score. On linux and mac, if the game is in your $PATH, you need to use the full path of the layout file. This applies for the scores file.
     dungeon = open("layout.txt", "r")
-    # separate lines into array and remove commented out lines
+    i = 0
     for line in dungeon:
-        if "#" in line:
-            continue
-        # TODO: cleaner way to fix this:
-        # █ character on windows messes up formatting, so we leave it as +
-        if name != "nt":
-            tmpLayout.append(line.replace("\n", "").replace("+", "█"))
-        else:
-            tmpLayout.append(line.replace("\n", ""))
-    # put dungeon layout in 2d array
-    layout = [[char for char in tmpLayout[i]] for i in range(len(tmpLayout))]
+        if "#" in line: continue
+        layout.append([])
 
-# TODO: clean this up
-# scans the whole map to find the start point
-def findStart():
-    for i in range(len(layout)):
-        for j in range(len(layout[i])):
+        if name != "nt":
+            line = line.replace("\n", "").replace("+", "█")
+        else:
+            line = line.replace("\n", "")
+
+        for j in range(len(line)):
+            layout[i].append(line[j])
             if layout[i][j] == "S":
                 position.append(i)
                 position.append(j)
                 discoveredRooms[0].append(position[0])
                 discoveredRooms[0].append(position[1])
-                return
+        i+=1
 
-# TODO: tidy up logic
 # checks to see if there is a room at the coordinates passed in
 def isRoom(y, x):
-    if y < 0:
-        return False
-    if x < 0:
-        return False
-    elif len(layout) <= y:
-        return False
-    elif len(layout[y]) <= x:
-        return False
-    elif str(layout[y][x]) == " ":
+    if y < 0 or x < 0 or len(layout) <= y or len(layout[y]) <= x or str(layout[y][x]) == " ":
         return False
     else:
         return True
@@ -162,25 +147,37 @@ def move(direction):
         timesToMove = int(direction[:numberLen+1])
         direction = direction[numberLen+1:]
 
-    # TODO: this is more repetitive than Gucci Gang ffs
-    for j in range(timesToMove):
-        if direction.lower() == "left" or direction.lower() == "l" and isRoom(position[0], position[1] - 1):
-            position = [position[0], position[1] - 1]
-            if position not in discoveredRooms:
-                discoveredRooms.append(position)
-        elif direction.lower() == "right" or direction.lower() == "r" and isRoom(position[0], position[1] + 1):
-            position = [position[0], position[1] + 1]
-            if position not in discoveredRooms:
-                discoveredRooms.append(position)
-        elif direction.lower() == "up" or direction.lower() == "u" and isRoom(position[0] - 1, position[1]):
-            position = [position[0] - 1, position[1]]
-            if position not in discoveredRooms:
-                discoveredRooms.append(position)
-        elif direction.lower() == "down" or direction.lower() == "d" and isRoom(position[0] + 1, position[1]):
-            position = [position[0] + 1, position[1]]
-            if position not in discoveredRooms:
-                discoveredRooms.append(position)
-        elif direction.lower() == "gold" or direction.lower() == "g":
+    # TODO: get a second opinion on this
+    if direction.lower() == "left" or direction.lower() == "l" \
+    and isRoom(position[0], position[1] - timesToMove):
+        position = [position[0], position[1] - timesToMove]
+        for i in range(timesToMove):
+            incrementalPos = [position[0], position[1] + i]
+            if incrementalPos not in discoveredRooms:
+                discoveredRooms.append(incrementalPos)
+    elif direction.lower() == "right" or direction.lower() == "r" \
+    and isRoom(position[0], position[1] + timesToMove):
+        position = [position[0], position[1] + timesToMove]
+        for i in range(timesToMove):
+            incrementalPos = [position[0], position[1] - i]
+            if incrementalPos not in discoveredRooms:
+                discoveredRooms.append(incrementalPos)
+    elif direction.lower() == "up" or direction.lower() == "u" \
+    and isRoom(position[0] - timesToMove, position[1]):
+        position = [position[0] - timesToMove, position[1]]
+        for i in range(timesToMove):
+            incrementalPos = [position[0] - i, position[1]]
+            if incrementalPos not in discoveredRooms:
+                discoveredRooms.append(incrementalPos)
+    elif direction.lower() == "down" or direction.lower() == "d" \
+    and isRoom(position[0] + timesToMove, position[1]):
+        position = [position[0] + timesToMove, position[1]]
+        for i in range(timesToMove):
+            incrementalPos = [position[0] + i, position[1]]
+            if incrementalPos not in discoveredRooms:
+                discoveredRooms.append(incrementalPos)
+    else:
+        if direction.lower() == "gold" or direction.lower() == "g":
             print(S+YELLOW+E + "You have", gold, "gold" + RESET)
         elif direction.lower() == "health" or direction.lower() == "hp":
             print(S+RED+E + "You have", health, "hp" + RESET)
@@ -191,8 +188,7 @@ def move(direction):
         elif direction.lower() == "q":
             exit()
         else:
-            print(S+LRED+E + "There is no such room" + RESET)
-            break
+            print(S+LRED+E + "Command not executed: wrong syntax or direction out of range." + RESET)
 
 # TODO: merge with roomType()?
 # looks at your coordinates and tells you what room you're in
@@ -249,6 +245,8 @@ def showHelp():
             "---" + "\n" +
             S+GREY+BOLD+E + "COMMANDS:" + RESET + "\n" +
             S+GREY+E + " - " + RESET + "up, down, right, left to move to the respective direction" + "\n" +
+            S+GREY+E + " - " + RESET + "You can also type the first letter to move (u,d,r,l)" + "\n" +
+            S+GREY+E + " - " + RESET + "You can move in the same direction multiple times (e.g: 4left)\nbut there are some drawbacks such as not discovering rooms around you" + "\n" +
             S+GREY+E + " - " + RESET + "g or gold to show the amount of gold you have" + "\n" +
             S+GREY+E + " - " + RESET + "hp or health to show the amount of health you have" + "\n" +
             S+GREY+E + " - " + RESET + "s or scores to show previous scores" + "\n" +
@@ -258,11 +256,10 @@ def showHelp():
 
 def giveTreasure():
     global gold
-
+    # if treasure is already stolen, return
     if position in treasuresStolen:
         print(S+CYAN+E + "You have already stolen this treasure" + RESET)
         return
-
     goldToGive = randint(10, randint(20, 500))
     print(S+YELLOW+E + "You gained", goldToGive, "gold!" + RESET)
     gold = gold + goldToGive
@@ -271,24 +268,24 @@ def giveTreasure():
 # boss fight: boss picks a random number, player tries to guess number. depending on how close guess is we determine how much damage the player takes.
 def bossFight():
     global health
-
     if position in defeatedBosses:
         print(S+CYAN+E + "You have already killed this boss" + RESET)
         return
 
     bossNum = randint(1, 100)
-
     validValue = False
     while not validValue:
         print(RESET, end="")
         myGuess = input(S+CYAN+E + "The boss offers to let you go past if you guess its secret number (1-100): " + RESET)
 
-        # TODO: just use isNumeric() or something
-        try:
-            myGuess = int(myGuess)
-        except ValueError :
+        if not myGuess.isnumeric():
             print(S+RED+E + "The boss wants a valid number" + RESET)
             continue
+        # try:
+        #     myGuess = int(myGuess)
+        # except ValueError :
+        #     print(S+RED+E + "The boss wants a valid number" + RESET)
+        #     continue
 
         if myGuess <= 100 and myGuess >= 1:
             validValue = True
@@ -418,7 +415,6 @@ def clear():
 # start the game
 clear()
 initLevel()
-findStart()
 while True:
     print("---")
     printMyRoom()
