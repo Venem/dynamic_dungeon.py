@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # IMPORTANT MEGA TODO: make it so that you can do "10r" and still discover rooms around you
+# MEGE MEGA TODO: implement GUI with PyGame after understanding how it works... then migrate the whole project to Java/C for the memes
 
 # we need random numbers for the boss fights
 from random import randint
@@ -281,6 +282,8 @@ def bossFight():
         if not myGuess.isnumeric():
             print(S+RED+E + "The boss wants a valid number" + RESET)
             continue
+        else:
+            myGuess = int(myGuess)
         # try:
         #     myGuess = int(myGuess)
         # except ValueError :
