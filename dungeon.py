@@ -39,6 +39,24 @@ discoveredRooms = [[]]
 defeatedBosses = []
 treasuresStolen = []
 
+quizList = [
+    # ["question", "answer", True]
+    ["10 + 9", "19", True],
+    ["16 * 2", "49", False],
+    ["5 * 3 - 1", "15", False],
+    ["9 + 10", "21", False],
+    ["10 + 2", "12", True]
+]
+
+positiveAnswers = [
+    "y", "yes", "yeah", "aha", "affirmative", "true", "t", "sure", "yup",
+    "yarp", "yeth", "yarrr, it's rewind time", "oui"
+]
+negativeAnswers = [
+    "n", "no", "nope", "negative", "false", "f", "nah", "narp", "non",
+    "nyet", "how dare you", "u stoopid"
+]
+
 # declare gold and health variables
 gold = 0
 health = 100
@@ -86,6 +104,8 @@ def roomType(y, x):
         return("a boss room")
     elif roomType == "T":
         return("a treasure room")
+    elif roomType == "Q":
+        return("a quiz room")
     elif roomType == "D":
         return("the dragon room")
 
@@ -202,8 +222,11 @@ def printMyRoom():
     elif roomType == "█" or roomType == "+":
         print("You are in a room")
     elif roomType == "B":
-        print("You are in a boss room")
+        # print("You are in a boss room")
         bossFight()
+    elif roomType == "Q":
+        # print("You are in a quiz room")
+        quiz()
     elif roomType == "T":
         print("You are in a treasure room")
         giveTreasure()
@@ -407,6 +430,31 @@ def showScores():
 
     for i in range(len(sortedScores)):
         print(S+LYELLOW+BOLD+E + str(i + 1) + ". " + RESET + S+LBLUE+E + str(sortedScores[i][0]) + "\t\t" + sortedScores[i][1] + RESET, end="")
+
+def quiz():
+    global health
+    global gold
+    clear()
+    print(S+CYAN+E + "You have found a " + RESET + S+BOLD+RED+E + "quiz room")
+    print(S+GREY+E + " - " + RESET + "If you get the question " + S+RED+E + "wrong" + RESET + ", you will lose some health")
+    print(S+GREY+E + " - " + RESET + "If you get the question " + S+GREEN+E + "right" + RESET + ", you will gain some gold")
+    i = randint(0, len(quizList) - 1)
+    answer = input("Is " + quizList[i][0] + " equal to " + quizList[i][1] + ": ")
+    if (answer.lower() in positiveAnswers and quizList[i][2]) \
+    or (answer.lower() in negativeAnswers and not quizList[i][2]):
+        goldToGet = randint(10, 50)
+        gold = gold + goldToGet
+        print("Correct! You gain " + str(goldToGet) + " gold")
+        sleep(1)
+        clear()
+    else:
+        print("Try again")
+        healthToLose = randint(1, 15)
+        health = health - healthToLose
+        printWait("You have lost " + str(healthToLose) + " health, you now have " + str(health) + " health")
+        sleep(2)
+        clear()
+    quizList.remove(quizList[i])
 
 # to clear screen
 def clear():

@@ -2,9 +2,10 @@
 # + means room
 # S means start
 # B means boss
+# Q means quiz room
 # T means treasure
 # D means dragon/end
-+++++++++++++++++++++++++S+++++++++++++++++++++++++
+++++++++++++++++++++++Q+QSQ+Q++++++++++++++++++++++
 +     +     +     +    +   +    +     +     +     +
 +++   TB  +++++ +++++ +++++++ +++++ +++++  BT   +++
 + +++     +   + +   +    +    +   + +   +     +++ +
