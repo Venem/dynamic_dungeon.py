@@ -33,6 +33,7 @@ LCYAN       = ";94"
 LWHITE      = ";94"
 
 # the positioning system is a bit weird because of the 2d array thing, keep that in mind when changing the code
+# TODO: might switch to a numpy array rather than pure python
 position = []
 layout = []
 discoveredRooms = [[]]
@@ -49,12 +50,10 @@ quizList = [
 ]
 
 positiveAnswers = [
-    "y", "yes", "yeah", "aha", "affirmative", "true", "t", "sure", "yup",
-    "yarp", "yeth", "yarrr, it's rewind time", "oui"
+    "y", "yes", "yeah", "aha", "affirmative", "true", "t", "sure", "yup"
 ]
 negativeAnswers = [
-    "n", "no", "nope", "negative", "false", "f", "nah", "narp", "non",
-    "nyet", "how dare you", "u stoopid"
+    "n", "no", "nope", "negative", "false", "f", "nah", "narp", "non", "nyet"
 ]
 
 # declare gold and health variables
@@ -64,20 +63,29 @@ health = 100
 # initialise, get layout from file and find start
 def initLevel():
     global layout
+    startFound = False
     dungeon = open("layout.txt", "r")
-    i = 0
+
+    i=0
     for line in dungeon:
         if "#" in line: continue
         layout.append([])
 
+        # use unicode block instead of + on non-windows
         if name != "nt":
             line = line.replace("\n", "").replace("+", "█")
         else:
             line = line.replace("\n", "")
 
         for j in range(len(line)):
+            # append each room to array
             layout[i].append(line[j])
+            # check if start
+            if layout[i][j] == "S" and startFound:
+                print(S+RED+E + "ERROR: " + S+CYAN+E + "Multiple Start rooms detected")
+                exit()
             if layout[i][j] == "S":
+                startFound = True
                 position.append(i)
                 position.append(j)
                 discoveredRooms[0].append(position[0])
@@ -90,6 +98,16 @@ def isRoom(y, x):
         return False
     else:
         return True
+
+def isRelativeRoom(direction, timesToMove):
+    if direction == "down" or direction == "d":
+        return(isRoom(position[0] + timesToMove, position[1]))
+    elif direction == "up" or direction == "u":
+        return(isRoom(position[0] - timesToMove, position[1]))
+    elif direction == "right" or direction == "r":
+        return(isRoom(position[0], position[1] + timesToMove))
+    elif direction == "left" or direction == "l":
+        return(isRoom(position[0], position[1] - timesToMove))
 
 # TODO: merge with printMyRoom()?
 # same thing as printMyRoom() but useful in different situations
@@ -168,30 +186,31 @@ def move(direction):
         timesToMove = int(direction[:numberLen+1])
         direction = direction[numberLen+1:]
 
+    isLeft = direction.lower() == "left" or direction.lower() == "l"
+    isRight = direction.lower() == "right" or direction.lower() == "r"
+    isUp = direction.lower() == "up" or direction.lower() == "u"
+    isDown = direction.lower() == "down" or direction.lower() == "d"
+
     # TODO: get a second opinion on this
-    if direction.lower() == "left" or direction.lower() == "l" \
-    and isRoom(position[0], position[1] - timesToMove):
+    if isLeft and isRelativeRoom(direction.lower(), timesToMove):
         position = [position[0], position[1] - timesToMove]
         for i in range(timesToMove):
             incrementalPos = [position[0], position[1] + i]
             if incrementalPos not in discoveredRooms:
                 discoveredRooms.append(incrementalPos)
-    elif direction.lower() == "right" or direction.lower() == "r" \
-    and isRoom(position[0], position[1] + timesToMove):
+    elif isRight and isRelativeRoom(direction.lower(), timesToMove):
         position = [position[0], position[1] + timesToMove]
         for i in range(timesToMove):
             incrementalPos = [position[0], position[1] - i]
             if incrementalPos not in discoveredRooms:
                 discoveredRooms.append(incrementalPos)
-    elif direction.lower() == "up" or direction.lower() == "u" \
-    and isRoom(position[0] - timesToMove, position[1]):
+    elif isUp and isRelativeRoom(direction.lower(), timesToMove):
         position = [position[0] - timesToMove, position[1]]
         for i in range(timesToMove):
             incrementalPos = [position[0] - i, position[1]]
             if incrementalPos not in discoveredRooms:
                 discoveredRooms.append(incrementalPos)
-    elif direction.lower() == "down" or direction.lower() == "d" \
-    and isRoom(position[0] + timesToMove, position[1]):
+    elif isDown and isRelativeRoom(direction.lower(), timesToMove):
         position = [position[0] + timesToMove, position[1]]
         for i in range(timesToMove):
             incrementalPos = [position[0] + i, position[1]]
